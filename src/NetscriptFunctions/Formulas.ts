@@ -41,6 +41,7 @@ import { InternalAPI, NetscriptContext } from "../Netscript/APIWrapper";
 import { helpers } from "../Netscript/NetscriptHelpers";
 import { calculateCrimeWorkStats } from "../Work/formulas/Crime";
 import { Crimes } from "../Crime/Crimes";
+import { Companies } from "../Company/Companies";
 import { calculateClassEarnings } from "../Work/formulas/Class";
 import { ClassType } from "../Work/ClassWork";
 import { LocationName } from "../Locations/data/LocationNames";
@@ -48,6 +49,7 @@ import { calculateFactionExp, calculateFactionRep } from "../Work/formulas/Facti
 import { FactionWorkType } from "../Work/data/FactionWorkType";
 
 import { defaultMultipliers } from "../PersonObjects/Multipliers";
+import { calculateCompanyWorkStats } from "src/Work/formulas/Company";
 
 export function NetscriptFormulas(): InternalAPI<IFormulas> {
   const checkFormulasAccess = function (ctx: NetscriptContext): void {
@@ -381,10 +383,13 @@ export function NetscriptFormulas(): InternalAPI<IFormulas> {
         exp.reputation = rep;
         return exp;
       },
-      // companyGains: (ctx) => (_player) {
-      //     const player = helpers.player(ctx, _player);
-
-      // },
+      companyGains: (ctx) => (_player, _companyName) => {
+        const player = helpers.player(ctx, _player);
+        const companyName = helpers.string(ctx, "_companyName", _companyName);
+        const company = Object.values(Companies).find((c) => String(c.name) === companyName);
+        if (!company) throw new Error(`Invalid company name: ${companyName}`);
+        return calculateCompanyWorkStats(player, company);
+      }
     },
   };
 }

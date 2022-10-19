@@ -3930,6 +3930,7 @@ interface WorkFormulas {
   crimeGains(crimeType: string): WorkStats;
   classGains(player: Player, classType: string, locationName: string): WorkStats;
   factionGains(player: Player, workType: string, favor: number): WorkStats;
+  companyGains(player: Player, companyName: string): WorkStats;  
 }
 
 /**
